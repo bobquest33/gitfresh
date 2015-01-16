@@ -71,7 +71,7 @@ func (r *repo) revision(target string) (string, error) {
 		return "", err
 	}
 	rev := string(bytes.Trim(bs, "\n"))
-	log.Debug(fmt.Sprintf("revision is %s", rev))
+	log.Debug(fmt.Sprintf("revision for %s is %s", target, rev))
 	return rev, nil
 }
 

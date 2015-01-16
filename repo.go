@@ -77,11 +77,7 @@ func (r *repo) revision(target string) (string, error) {
 
 // Sync checks if the remote revision is different than the local one, updating the repository if it is.
 func (r *repo) Sync() error {
-	_, err := r.run("status")
-	if err != nil {
-		return err
-	}
-	err = r.Fetch(r.Remote, r.Branch)
+	err := r.Fetch(r.Remote, r.Branch)
 	if err != nil {
 		return err
 	}

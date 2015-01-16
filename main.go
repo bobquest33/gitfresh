@@ -13,6 +13,7 @@ import (
 var log = syblog.New(os.Stderr)
 
 var errInvalidRepo = errors.New("no valid repository found in the specified path")
+var errRepoInit = errors.New("unknown error while initializing the repository")
 
 func main() {
 	defer errHandler()
@@ -39,9 +40,12 @@ func main() {
 		log.SetLevel(syblog.LevelError)
 	}
 
+	log.Debug(fmt.Sprintf("command invocation: %v", os.Args))
+
 	log.Info(fmt.Sprintf("repository path: %s", path))
 	log.Info(fmt.Sprintf("remote: %s", remote))
 	log.Info(fmt.Sprintf("branch: %s", branch))
+	log.Info(fmt.Sprintf("remote URL: %s", initFrom))
 	log.Info(fmt.Sprintf("sync interval: %s", interval))
 
 	repo := NewRepo(path, remote, branch)
@@ -60,7 +64,12 @@ func main() {
 			err = os.MkdirAll(path, 0700)
 			check(err)
 		}
-		repo.InitFrom(initFrom)
+		check(repo.InitFrom(initFrom))
+		valid, err = repo.Valid()
+		check(err)
+		if !valid {
+			abort(errRepoInit)
+		}
 	}
 
 	tc := time.Tick(interval)
